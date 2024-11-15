@@ -22,11 +22,8 @@ class ImgX extends ImgXLoader {
       super.cacheDuration,
       super.onProgress});
 
-  void removeCacheWhere({required String key}) {
-    ImgXCache.instance.remove(key);
-  }
+  static Future removeCacheWhere({required String key}) =>
+      ImgXCache.instance.remove(key);
 
-  void removeAllCache() {
-    ImgXCache.instance.removeAll();
-  }
+  static Future removeAllCache() => ImgXCache.instance.removeAll();
 }

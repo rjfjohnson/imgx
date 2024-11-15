@@ -28,11 +28,22 @@ class _HomePageState extends State<HomePage> {
             ImgX(
               width: 200,
               height: 200,
+              cacheDuration: const Duration(days: 1),
+              cacheType: CacheType.memory,
+              retryCount: 2,
+              headers: {"Authorization": "Bearer token"},
+              progressWidget: const Center(
+                child: CircularProgressIndicator(),
+              ),
+              errorWidget: const Center(
+                child: Icon(Icons.error),
+              ),
               imageUri:
                   "https://www.loudegg.com/wp-content/uploads/2020/10/Fred-Flintstone.jpg",
               fit: BoxFit.fitHeight,
               onProgress: (progress) {
-                print("Download progress: ${(progress * 100).toStringAsFixed(2)}%");
+                print(
+                    "Download progress: ${(progress * 100).toStringAsFixed(2)}%");
               },
             ),
           ],
