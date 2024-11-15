@@ -1,4 +1,4 @@
-import 'package:imgx/src/cache_type.dart';
+import 'package:imgx/src/img_x_cache_type.dart';
 import 'package:imgx/src/image_cache/preferences.dart';
 
 import 'cache_item.dart';
@@ -10,7 +10,10 @@ class DiskCacheModel {
   int cacheTime;
   int expiryDuration; //in days
 
-  DiskCacheModel({required this.data, required this.cacheTime, this.expiryDuration = 2});
+  DiskCacheModel(
+      {required this.data,
+      required this.cacheTime,
+      required this.expiryDuration});
 
   Map<String, dynamic> toJson() {
     return {
@@ -21,48 +24,49 @@ class DiskCacheModel {
   }
 }
 
-class ImgXCache with Preferences{
+class ImgXCache with Preferences {
   ImgXCache._();
   static ImgXCache instance = ImgXCache._();
-  final _defaultDuration = const Duration(hours: 1).inMilliseconds;
 
-  Map<String, dynamic> cacheMap = {};
+  Map<String, dynamic> cacheMemoryMap = {};
 
   void putCache(String key, dynamic data,
-      {CacheType cacheType = CacheType.memory}) {
-    if (cacheType == CacheType.memory) {
-      cacheMap[key] = CacheItem(DateTime.now().millisecondsSinceEpoch, data);
+      {required ImgXCacheType cacheType, required Duration cacheDuration}) {
+    if (cacheType == ImgXCacheType.memory) {
+      cacheMemoryMap[key] = CacheItem(DateTime.now().millisecondsSinceEpoch, data);
       return;
     }
     /** save in disk */
     super.saveImageCache(
         key,
         DiskCacheModel(
-          data: data,
-          cacheTime: DateTime.now().millisecondsSinceEpoch,
-        ));
+            data: data,
+            cacheTime: DateTime.now().millisecondsSinceEpoch,
+            expiryDuration: cacheDuration.inMilliseconds));
   }
 
-  dynamic getCache(String key) => _getFromMemory(key);
+  dynamic getCache(String key, Duration cacheDuration) =>
+      _getFromMemory(key, cacheDuration);
 
-  Future<dynamic> getCacheAsync(String key) async {
-    dynamic data = _getFromMemory(key);
+  Future<dynamic> getCacheAsync(String key, Duration cacheDuration) async {
+    dynamic data = _getFromMemory(key, cacheDuration);
     if (data != null) {
       return data;
     }
     return await _getFromDisk(key);
   }
 
-  dynamic _getFromMemory(String key) {
-    var item = cacheMap[key];
+  dynamic _getFromMemory(String key, Duration cacheDuration) {
+    var item = cacheMemoryMap[key];
     if (item == null) {
       return null;
     }
     item = item as CacheItem;
     int nowTime = DateTime.now().millisecondsSinceEpoch;
-    bool hasCacheExpired = nowTime > item.cacheTime + _defaultDuration;
+    bool hasCacheExpired =
+        nowTime > item.cacheTime + cacheDuration.inMilliseconds;
     if (hasCacheExpired) {
-      cacheMap.remove(key);
+      cacheMemoryMap.remove(key);
       return null;
     }
     return item.data;
@@ -74,9 +78,8 @@ class ImgXCache with Preferences{
       return null;
     }
     int nowTime = DateTime.now().millisecondsSinceEpoch;
-    bool hasCacheExpired = nowTime >
-        (cachedData.cacheTime +
-            (cachedData.expiryDuration * 24 * 60 * 60 * 1000));
+    bool hasCacheExpired =
+        nowTime > (cachedData.cacheTime + cachedData.expiryDuration);
     if (hasCacheExpired) {
       super.remove(key);
       return null;
@@ -85,10 +88,10 @@ class ImgXCache with Preferences{
   }
 
   void removeWhere(String keyword) {
-    cacheMap.removeWhere((key, value) => key.contains(keyword));
+    cacheMemoryMap.removeWhere((key, value) => key.contains(keyword));
   }
 
   void removeAll() {
-    cacheMap.clear();
+    cacheMemoryMap.clear();
   }
 }
