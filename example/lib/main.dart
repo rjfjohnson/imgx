@@ -4,7 +4,7 @@ import 'package:imgx/imgx.dart';
 
 void main() {
 
-  ImgXConfig.globalCacheType = ImgXCacheType.memory;
+  ImgXConfig.globalCacheType = CacheType.disk;
   ImgXConfig.globalCacheDuration = const Duration(days: 1);
   ImgXConfig.globalProgressWidget = const Center(
     child: CircularProgressIndicator(),

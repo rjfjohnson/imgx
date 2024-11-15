@@ -1,6 +1,6 @@
 name: imgx
 description: "Image loader with memory || disk caching and retry loading."
-version: 0.0.1
+version: 0.1.0
 homepage: "https://github.com/huygenlabs/imgx"
 
 environment:
@@ -35,7 +35,7 @@ flutter:
   # For details regarding assets in packages, see
   # https://flutter.dev/to/asset-from-package
   #
-  # An image asset can refer to one or more resolution-specific "variants", see
+  # An image_widget asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
   # To add custom fonts to your package, add a fonts section here,

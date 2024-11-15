@@ -1,27 +1,24 @@
 import 'dart:convert';
 
-import 'package:imgx/src/image_cache/img_x_cache.dart';
+import 'package:imgx/src/cache/img_x_cache.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Created by lovepreetsingh on 14,November,2024
 
-mixin Preferences {
-
-  Future saveImageCache(String key, DiskCacheModel data) async {
-    return (await SharedPreferences.getInstance()).setString(key, jsonEncode(data.toJson()));
+mixin ImgXPrefs {
+  Future saveImageCache(String key, CacheModel data) async {
+    return (await SharedPreferences.getInstance())
+        .setString(key, jsonEncode(data.toJson()));
   }
 
-  Future<DiskCacheModel?> getImageCache(String key) async {
+  Future<CacheModel?> getImageCache(String key) async {
     var data = (await SharedPreferences.getInstance()).getString(key);
     if (data == null) {
       return null;
     }
     Map<String, dynamic> jsonData = jsonDecode(data);
-    return DiskCacheModel(
-      data: jsonData['data'],
-      cacheTime: jsonData['cacheTime'],
-      expiryDuration: jsonData['expiryDuration'],
-    );
+    return CacheModel(
+        data: jsonData['data'], cacheDuration: jsonData['cacheDuration']);
   }
 
   Future remove(String key) async {

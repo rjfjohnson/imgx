@@ -1,3 +1,3 @@
-## 0.0.1
+## [0.1.0] - (15th November 2024)
 
-* TODO: Describe initial release.
+- Initial release: Load images from a url, cache it in memory or disk and a retry mechanism in case of failure.

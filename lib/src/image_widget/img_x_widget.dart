@@ -2,25 +2,26 @@ import 'dart:core';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:imgx/src/img_x_config.dart';
-import 'package:imgx/src/img_x_cache_type.dart';
-import 'package:imgx/src/image_source.dart';
+import 'package:imgx/src/config/img_x_config.dart';
+import 'package:imgx/src/cache/cache_type.dart';
+import 'package:imgx/src/image_widget/img_x_source.dart';
 
 /// Created by lovepreetsingh on 14,November,2024
 
-class ImageLoader extends StatefulWidget {
+class ImgXLoader extends StatefulWidget {
   final String imageUri;
   final BoxFit fit;
   final Widget? progressWidget;
   final Widget? errorWidget;
   final double? width;
   final double? height;
-  final ImgXCacheType? cacheType;
+  final CacheType? cacheType;
   final Duration? cacheDuration;
   final Map<String, String> headers;
   final int? retryCount;
+  final Function(double progress)? onProgress;
 
-  const ImageLoader(
+  const ImgXLoader(
       {required this.imageUri,
       this.width,
       this.height,
@@ -31,16 +32,17 @@ class ImageLoader extends StatefulWidget {
       this.headers = const {},
       this.retryCount,
       this.cacheDuration,
+      this.onProgress,
       super.key});
 
   @override
-  State<ImageLoader> createState() => _ImageLoaderState();
+  State<ImgXLoader> createState() => _ImgXLoaderState();
 }
 
-class _ImageLoaderState extends State<ImageLoader> with ImageSource {
+class _ImgXLoaderState extends State<ImgXLoader> with ImgXSource {
   late Widget? progressWidget;
   late Widget? errorWidget;
-  late ImgXCacheType cacheType;
+  late CacheType cacheType;
   late Duration cacheDuration;
   late int retryCount;
 
@@ -64,7 +66,8 @@ class _ImageLoaderState extends State<ImageLoader> with ImageSource {
     }
     return FutureBuilder<Uint8List?>(
         future: getImage(widget.imageUri, widget.headers, cacheType,
-            cacheDuration, retryCount),
+            cacheDuration, retryCount,
+            onProgress: widget.onProgress),
         builder: (ctx, snapshot) {
           data = snapshot.data;
           return AnimatedCrossFade(
@@ -114,7 +117,10 @@ class _ImageLoaderState extends State<ImageLoader> with ImageSource {
             width: widget.width,
             height: widget.height, errorBuilder: (context, error, stackTrace) {
           logger.e(error.toString());
-          return errorWidget ?? _errorWidget();
+          return SizedBox(
+              width: widget.width,
+              height: widget.height,
+              child: errorWidget ?? _errorWidget());
         }),
       );
 
