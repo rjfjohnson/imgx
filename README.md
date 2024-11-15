@@ -31,6 +31,8 @@ void main() {
 
 ## 2. ImgX widget usage
 
+If you have already set up global configurations, you can use the ImgX widget without any parameters. If you want to override the global configurations, you can set the parameters as shown in the example below.
+
 ```dart
 import 'package:imgx/imgx.dart';
 
@@ -78,7 +80,7 @@ void removeCache(){
 If you find this package useful, you can support it for free by giving it a thumbs up at the top of this page. 
 
 
-Congrats you finished your setup for ImgX,
+Congrats you finished your setup for ImgX.
 
 # FAQs
 
